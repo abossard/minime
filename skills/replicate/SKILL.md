@@ -29,7 +29,7 @@ Follow context-engineering guidance in `assets/ORCHESTRATION.md` § Context engi
 
 Evidence is real output from real execution: test results, command output, HTTP responses, screenshots, logs. See `assets/ORCHESTRATION.md` § Evidence value chain for the weight tiers.
 
-## The loop (this is the empirically strongest part of the flow)
+## The loop
 
 ### Test-scope classification (before running tests)
 
@@ -43,17 +43,15 @@ Before running tests for a criterion, classify the touched surface and choose th
 3. **Broaden only when the touched contract demands it.** Do not reflexively run the whole suite. A full suite run is justified only when: the change touches shared infrastructure, build configuration, or dependency versions.
 4. **Record what was tested and why** that scope was sufficient. If you chose narrow scope, state why broader was unnecessary.
 
-Adapted from openclaw's "prove touched surface" principle: narrow tests first, broaden only when the contract demands it.
-
 ### Scoped wiki entries
 
 When entering a directory for the first time in a task, check the repo wiki for entries whose `Scope` field matches that directory. These entries carry directory-specific guidance (the equivalent of in-repo AGENTS.md files). Apply any matching active entries as constraints for work in that directory. If no scoped entries exist, proceed normally.
 
 Repeat per acceptance criterion:
 
-1. **Write the test first** at the user-facing or API boundary. The test must exercise the behavior the way a user or consumer would: through public APIs, CLI commands, HTTP endpoints, or UI elements via accessibility/visual attributes. Do NOT test internal implementation details (private methods, internal state, wiring). Include at least one error/wrong-input case alongside the happy path. Executable tests had the strongest positive effect on correctness in multi-stage studies.
+1. **Write the test first** at the user-facing or API boundary. The test must exercise the behavior the way a user or consumer would: through public APIs, CLI commands, HTTP endpoints, or UI elements via accessibility/visual attributes. Do NOT test internal implementation details (private methods, internal state, wiring). Include at least one error/wrong-input case alongside the happy path.
 2. **Implement** the smallest change that could pass it.
-3. **Run the test. Observe the REAL output.** Never assume a run passed. Paste/inspect actual output. "Ran tests, passed" with no output is the classic instruction-attenuation failure.
+3. **Run the test. Observe the REAL output.** Never assume a run passed. Paste/inspect actual output.
 4. **Fix** based on real output. Re-run. Prefer executable feedback over purely conversational review loops.
 5. Move to the next criterion only when this one is genuinely green.
 
