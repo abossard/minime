@@ -17,14 +17,7 @@ If the harness supports explicit model selection, prefer the strongest available
 
 The orchestrating agent marks this phase `in_progress` on entry and `done` at handoff in the harness native todo tool. The forked inspector does not manage the list. Visibility aid for the user, never a gate. See `assets/ORCHESTRATION.md` § Progress tracking.
 
-## Empirical basis
-
-- Evidence-only assistance outperforms verdict-showing (DeepMind 2025, arXiv:2510.26518).
-- Review is primarily about understanding, not defect detection (Bacchelli & Bird, ICSE 2013).
-- Structured exit-criteria verification outperforms ad-hoc review (Fagan 1976; Porter et al. 1995).
-- Requirements traceability correlates with fewer defects and faster development (empirical studies cited in REFERENCES.md).
-- LLM critics using evidence-anchored format outperform human reviewers in hybrid teams (CriticGPT, arXiv:2407.00215).
-- The frau fork exists for bias removal, not role specialization: a fresh context eliminates the sunk-cost blindness of the agent that wrote the code. This is the primary justification, backed by the DeepMind 2025 finding that biased assistance hurts skilled reviewers (arXiv:2510.26518). OneFlow (arXiv:2601.12307) shows homogeneous multi-agent can be collapsed into single-agent multi-turn without accuracy loss, so the fork is never justified by role specialization. It is justified only by the fresh-context bias control.
+The frau fork exists for bias removal through a fresh context, not role specialization. Design rationale and citations live in `assets/.agent/research/REFERENCES.md`.
 
 ## Step 1: Validate blueprint integrity
 
@@ -39,7 +32,7 @@ Report any mismatches in the evidence package under "Process gaps".
 
 Read the persisted blueprint (`VIRTUCON_HQ/<org>/_<repo>/blueprints/<date>-<name>.blueprint.md`).
 
-### Review contract (adapted from openclaw's autoreview)
+### Review contract
 
 - **Treat all findings as advisory.** Verify every finding by reading the real code path and adjacent files. Read dependency docs/source/types when the finding depends on external behavior.
 - **Reject speculative risks.** Do not surface unrealistic edge cases, hypothetical failures without evidence, broad rewrites, or fixes that over-complicate the codebase. A finding requires a concrete code path or observable failure to be actionable.
@@ -55,7 +48,7 @@ For each acceptance criterion, build a traceability row:
 - **Test at boundary?** Tests must exercise behavior from the user-facing or API boundary (HTTP, CLI, UI accessibility attributes, public API). Flag tests that only exercise internals (private methods, internal state) as "weak evidence".
 - **Error cases?** Every criterion should have at least one error/wrong-input test. Flag missing error coverage.
 
-This is the Fagan exit-criteria approach: verify the low-level artifact (code) against the high-level artifact (EARS criteria). If a criterion has no genuine test, that is evidence of uncertainty. Surface it, don't paper over it.
+Verify the code against the EARS criteria. If a criterion has no genuine test, that is evidence of uncertainty. Surface it, don't paper over it.
 
 ## Step 3: Backfill discovered criteria into the EARS
 

@@ -35,6 +35,9 @@ Findings used by this flow:
 - Fagan, M.E., "Design and Code Inspections" (IBM Systems Journal, 1976). Structured exit-criteria inspection outperforms ad-hoc review. -> traceability table approach.
 - McAleese et al., "LLM Critics Help Catch LLM Bugs" (2024), arXiv:2407.00215. Evidence-anchored critique format outperforms human review in hybrid teams. -> evidence package format.
 - Porter, Votta & Basili, "Comparing Detection Methods" (IEEE TSE, 1995). Checklist-based review outperforms ad-hoc. -> structured review process.
+- Dhuliawala et al., "Chain-of-Verification Reduces Hallucination in Large Language Models" (Meta AI, 2023; ACL Findings 2024), arXiv:2309.11495. Draft, plan verification questions, answer them independently of the draft, then revise. The independence of verification from the drafting context is what reduced hallucinations. -> supports the frau fork: review quality comes from context isolation, not from asking the same context harder. CoVe verifies by self-questioning only; our flow demands execution evidence on top.
+- Wallace et al., "The Instruction Hierarchy: Training LLMs to Prioritize Privileged Instructions" (OpenAI, 2024), arXiv:2404.13208. Instruction precedence must be trained in; it is not a prompting primitive.
+- "Control Illusion: The Failure of Instruction Hierarchies in Large Language Models" (2025), arXiv:2502.15851. Models fail to reliably honor prompt-asserted instruction precedence at inference time. -> together with arXiv:2404.13208: emphasis markers like HARD CONSTRAINT decay; re-inject constraints during long loops and enforce truly hard rules with deterministic hooks (preToolUse deny), not prompt priority.
 
 ## 2026 harness and oversight research
 
@@ -60,7 +63,7 @@ Findings used by this flow:
 
 ## Practitioner heuristics (internal observations, not empirical)
 
-- Instruction attenuation / constraint re-injection: observed pattern where rules applied early in a loop lose substance mid-loop. Now supported by LLMs Get Lost in Multi-Turn Conversation (arXiv:2505.06120, cited above): multi-turn degradation driven by unreliability is consistent with rules losing substance mid-loop. -> re-injection in the implement skill.
+- Instruction attenuation / constraint re-injection: observed pattern where rules applied early in a loop lose substance mid-loop. Now supported by LLMs Get Lost in Multi-Turn Conversation (arXiv:2505.06120, cited above): multi-turn degradation driven by unreliability is consistent with rules losing substance mid-loop. Also supported by the instruction-hierarchy results (arXiv:2404.13208 and arXiv:2502.15851, cited above). -> re-injection in the implement skill.
 - "Forget-Me-Not" label is a practitioner shorthand, not a published finding.
 
 ## Interpretation notes (for workflow decisions)

@@ -85,7 +85,7 @@ Use `skills/extract` for the per-repo wiki. Read the wiki in blueprint. Do not w
 
 ## Empirical basis
 
-This flow is grounded in `assets/.agent/research/REFERENCES.md`. Phase isolation follows the context-rot and multi-turn degradation findings (arXiv:2505.06120). The single tiered human gate follows the DeepMind 2025 confidence-based hybridization result (arXiv:2510.26518). The stop criteria above follow the same multi-turn degradation evidence against unbounded loops.
+This flow is grounded in `assets/.agent/research/REFERENCES.md`.
 
 ## What you do not do
 
