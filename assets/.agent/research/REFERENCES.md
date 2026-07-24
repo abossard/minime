@@ -35,6 +35,9 @@ Findings used by this flow:
 - Fagan, M.E., "Design and Code Inspections" (IBM Systems Journal, 1976). Structured exit-criteria inspection outperforms ad-hoc review. -> traceability table approach.
 - McAleese et al., "LLM Critics Help Catch LLM Bugs" (2024), arXiv:2407.00215. Evidence-anchored critique format outperforms human review in hybrid teams. -> evidence package format.
 - Porter, Votta & Basili, "Comparing Detection Methods" (IEEE TSE, 1995). Checklist-based review outperforms ad-hoc. -> structured review process.
+- TDAD: Test-Driven Agentic Development (2026), arXiv:2603.17973. Targeted test/code-impact context cut regressions from 6.08% to 1.82%; generic procedural TDD instructions raised regressions to 9.94%; issue resolution improved from 24% to 32%. -> `skills/replicate/SKILL.md` test-scope classification: select tests by code/test impact analysis first, directory/module colocation only as fallback.
+- Fostering Appropriate Reliance on Large Language Models: The Role of Explanations, Sources, and Inconsistencies (CHI 2025), arXiv:2502.08554, DOI 10.1145/3706598.3714020. Preregistered N=308 experiment: explanations raised reliance on both correct and incorrect responses; sources or visible inconsistencies lowered reliance on incorrect responses. -> `skills/inspect/SKILL.md` evidence package: cite this paper in Empirical basis and surface inconsistencies/contradictions as a distinct evidence-package item.
+- Memora: From Recall to Forgetting: Benchmarking Long-Term Memory for Personalized Agents (ACL 2026 Findings), arXiv:2604.20006. Four LLMs and six memory agents frequently reused invalid memories and failed to reconcile evolving ones; adding memory agents only marginally improved this. -> `skills/blueprint/SKILL.md` step 7: tag each cited wiki entry `active` / `stale` / `superseded` against live code.
 
 ## 2026 harness and oversight research
 

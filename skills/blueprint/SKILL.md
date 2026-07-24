@@ -1,13 +1,13 @@
 ---
 name: blueprint
-description: "Blueprint a coding task from inline context or an existing blueprint. Reads the repo and org wiki page collections, scores and verifies them, thinks silently, self-challenges, and hands off to replicate. No human review gate. The blueprint is the durable handoff artifact."
+description: "Blueprint a coding task from inline context or an existing blueprint. Reads the repo and org wiki page collections, scores and verifies them, thinks silently, self-challenges, and returns a persisted plan. No human review gate. The blueprint is the durable handoff artifact."
 when_to_use: "When the user has a task to plan, whether as an existing blueprint file, inline conversation context, or a verbal description. This skill starts the orchestration flow."
 allowed-tools: Read Edit Grep Glob Bash(git remote get-url *) Bash(git log *) Bash(git status) Bash(ls *) Bash(mkdir *) Write
 ---
 
 # Skill: blueprint
 
-Runs first in the four-phase flow. No human review gate. The output is an executable handoff for replicate.
+Runs first in the four-phase flow. No human review gate. The output is an executable plan returned to the caller.
 
 ## Progress
 
@@ -19,6 +19,7 @@ Mark this phase in the harness native todo tool: `in_progress` on entry, `done` 
    Derive `<org>` and `<repo>` from `git remote get-url origin`. Use VIRTUCON_HQ from the session nudge, then env var, then `~/.minime`.
    Create or update `VIRTUCON_HQ/<org>/_<repo>/blueprints/<YYYY-MM-DD>-<short-name>.blueprint.md`.
    Use `VIRTUCON_HQ/templates/blueprint.template.md`.
+   Normalize the living blueprint when an older HQ template lacks the required correction-scoped `## Active criteria` or `## Criteria archive` sections. Preserve the user's template file itself. Move only uncompleted criteria into the current correction. Do not copy completed criteria back into active state or fabricate archive hashes; leave unsealed legacy completion text in place for later independent inspection.
    Read the file back from disk before proceeding.
 
 2. **Accept the task source from wherever it lives.**
@@ -56,6 +57,7 @@ Mark this phase in the harness native todo tool: `in_progress` on entry, `done` 
    Open cited code paths from selected pages.
    If a page makes an uncited claim, mark it as a lead only.
    If a cited claim no longer matches live code, ignore it for planning and flag it for extract as stale.
+   Tag each entry carried into the `## Relevant verified wiki entries` section with an inline `active` / `stale` / `superseded` status against live code. Memora (arXiv:2604.20006) found LLM memory agents frequently reused invalid memories and failed to reconcile evolving ones; this tag makes supersession/staleness explicit per citation instead of silently trusted.
 
 8. **Plan silently and persist the handoff.**
    Write a `## Plan summary` with files to touch, implementation order, fix shape, tests, and resolved wiki constraints.
@@ -66,8 +68,19 @@ Mark this phase in the harness native todo tool: `in_progress` on entry, `done` 
 10. **Self-challenge briefly.**
    State the riskiest assumption, when the approach would be wrong, and any remaining ambiguity.
 
-11. **Hand off.**
-   End by instructing: now invoke `skill("replicate")` with the persisted blueprint path.
+11. **Return.**
+   Return control to the orchestrator or, for direct manual use, its caller. Do not invoke another phase.
+
+## Result contract
+
+Return exactly the shared result contract from `assets/ORCHESTRATION.md`:
+- `status`: `done`, `blocked`, or `failed`
+- `blueprint_path`: absolute persisted path, or `null`
+- `changed_files[]`: sorted repository-relative paths, or an empty array
+- `blocking_issue`: actionable text, or `null`
+- `evidence_excerpts[]`: compact raw proof, or an empty array
+
+Never omit a field. Return control to its caller without self-chaining.
 
 ## Rules
 

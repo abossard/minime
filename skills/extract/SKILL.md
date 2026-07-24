@@ -1,13 +1,13 @@
 ---
 name: extract
-description: Extract lessons from a just-merged task or current session into the global raw/wiki knowledge root. Human corrections are the highest-value signal. Every durable claim must cite live code.
-when_to_use: Right after a task is merged or staged, after a significant session with learnings worth preserving, or when the user explicitly asks to extract lessons from recent work.
+description: Extract lessons once at a coherent task or session boundary into the global raw/wiki knowledge root. Human corrections are the highest-value signal. Every durable claim must cite live code.
+when_to_use: When the orchestrator reaches the terminal task or session boundary with no active criteria, or when the user explicitly asks to extract lessons from recent work.
 allowed-tools: Read Edit Write Grep Glob Bash(git log *) Bash(git diff *) Bash(git show *) Bash(git remote get-url *) Bash(git status)
 ---
 
 # Skill: extract
 
-Trigger: a task is merged or a session produced lessons worth preserving. It turns raw outcomes into durable knowledge under `raw/`, `wiki/`, and `schema.md`.
+Trigger: the coherent task or session boundary has been reached with no active criteria and no blocking issue, or the user explicitly requested extract. It turns raw outcomes into durable knowledge under `raw/`, `wiki/`, and `schema.md`.
 
 Human corrections are the highest-value signal. Capture them first.
 
@@ -95,6 +95,8 @@ Every topic page should keep these elements when they help retrieval:
 - Never store secrets, tokens, credentials, or customer data.
 - The durable knowledge base is not a changelog.
 - The wiki remains authoritative even if you also mirror high-value lessons to platform-native memory.
+- Extract remains pending across correction loops and runs at most once at the terminal boundary.
+- Exact current-task permission is required before any staging. Staging is not a prerequisite for inspect, extract, or completion.
 
 ## Lint mode
 
@@ -107,3 +109,16 @@ When asked to lint, check the repo wiki pages for:
 6. research candidates from the blueprint that deserve promotion
 
 Follow `assets/ORCHESTRATION.md` for the shared raw/wiki/schema contract.
+
+## Return
+
+Return control to the orchestrator or, for direct manual use, its caller. Do not invoke another phase.
+
+Return exactly the shared result contract from `assets/ORCHESTRATION.md`:
+- `status`: `done`, `blocked`, or `failed`
+- `blueprint_path`: absolute persisted path, or `null`
+- `changed_files[]`: sorted repository-relative paths, or an empty array
+- `blocking_issue`: actionable text, or `null`
+- `evidence_excerpts[]`: compact raw proof, or an empty array
+
+Never omit a field.

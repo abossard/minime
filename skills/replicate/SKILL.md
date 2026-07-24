@@ -1,13 +1,13 @@
 ---
 name: replicate
-description: Replicate a planned task in a tight test-driven loop. Generate -> run -> observe REAL output -> fix. Re-injects blueprint constraints after context compaction or when switching focus. No human review gate.
-when_to_use: After /minime:blueprint has handed off, or whenever the user wants the implementation loop with grounded test execution.
+description: Replicate a planned task in a tight test-driven loop. Generate -> run -> observe REAL output -> fix. Re-injects blueprint constraints after context compaction or when switching focus. Returns evidence without self-chaining.
+when_to_use: When the orchestrator dispatches a persisted blueprint, or whenever the user wants the implementation loop with grounded test execution.
 allowed-tools: Read Edit Write Grep Glob Bash
 ---
 
 # Skill: replicate
 
-Trigger: `/minime:blueprint` has handed off, or the user invoked you directly with an existing plan. **No human review gate.** Quality here comes from a tight execution-grounded loop, not from human checkpoints.
+Trigger: the orchestrator dispatched a persisted blueprint, or the user invoked you directly with an existing plan. **No human review gate.** Quality here comes from a tight execution-grounded loop, not from human checkpoints.
 
 ## Progress
 
@@ -22,6 +22,7 @@ As you complete each criterion:
 - Paste raw shortened evidence (command output, test result, key lines) directly under the criterion line. Every `[x]` must have its proof inline — a checkmark without evidence is not a checkmark.
 - If you resolve an unknown during implementation, add it to the Decisions table with its VOI level and source.
 - If you discover a requirement not in the original EARS, note it but do NOT add it to the criteria. That's review's job.
+- Work only on the current correction's active criteria. Archived criteria remain out of scope unless the blueprint marks their baseline proof invalidated.
 
 Follow context-engineering guidance in `assets/ORCHESTRATION.md` § Context engineering.
 
@@ -37,8 +38,8 @@ Before running tests for a criterion, classify the touched surface and choose th
 
 1. **Identify what changed**: list the files/directories the current implementation step touches.
 2. **Choose the narrowest test scope that proves the criterion**:
-   - If only one file changed: run that file's colocated or directly related tests.
-   - If a module/package changed: run that module's test suite.
+   - Primary method: find impacted tests via the actual code/test dependency relationship (callers/importers of the changed symbols, or an existing coverage/impact map). TDAD (arXiv:2603.17973) found targeted test-impact context cut regressions from 6.08% to 1.82%, while generic procedural TDD instructions raised regressions to 9.94%; issue resolution improved from 24% to 32% with impact-based context.
+   - Fallback when no dependency/impact map is available: use directory/module colocation (single file changed -> colocated tests; module/package changed -> that module's test suite).
    - If a cross-cutting contract changed (API, schema, shared types): broaden to integration/contract tests.
 3. **Broaden only when the touched contract demands it.** Do not reflexively run the whole suite. A full suite run is justified only when: the change touches shared infrastructure, build configuration, or dependency versions.
 4. **Record what was tested and why** that scope was sufficient. If you chose narrow scope, state why broader was unnecessary.
@@ -81,9 +82,15 @@ Before handing off to review, re-read the persisted blueprint and verify:
 4. Write a `## Evidence collected` section to the blueprint referencing: all test commands run (with raw shortened output — not summaries), files changed, and assumptions made. This collects evidence in one place ON TOP of the inline proof under each criterion. This ensures inspect can evaluate from disk without needing chat context from this phase.
 **Do not skip this step.** The review phase relies on the blueprint being accurate.
 
-## Hand off to /minime:inspect with
-- the path to the persisted blueprint (with checkmarks and evidence updated)
-- the diff
-- assumptions made, and any out-of-scope work discovered
+## Return
 
-**Explicit next step: now invoke `skill("inspect")`** to get an evidence-based review.
+Return control to the orchestrator or, for direct manual use, its caller. Do not invoke another phase.
+
+Return exactly the shared result contract from `assets/ORCHESTRATION.md`:
+- `status`: `done`, `blocked`, or `failed`
+- `blueprint_path`: absolute persisted path, or `null`
+- `changed_files[]`: sorted repository-relative paths, or an empty array
+- `blocking_issue`: actionable text, or `null`
+- `evidence_excerpts[]`: compact raw proof, or an empty array
+
+Never omit a field. Durable evidence, assumptions, and out-of-scope discoveries stay in the blueprint.

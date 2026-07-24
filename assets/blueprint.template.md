@@ -8,7 +8,16 @@ Created: <date>  |  Status: planning  |  Repo: <org/repo>
 ## Goal
 <2–4 sentences. What outcome, and why. Not how.>
 
-## Acceptance criteria (EARS-style: each must be independently testable)
+## Active criteria
+
+### Correction <C0>: <short correction name>
+
+#### Correction source (verbatim; do not edit or interpret)
+> <paste the exact task or correction words here, unmodified>
+
+Only this correction's new, failed, or invalidated criteria belong here. Do not copy completed criteria from earlier corrections back into this section.
+
+#### EARS criteria (each must be independently testable)
 
 Patterns: each criterion collapses to one checkable claim:
 - Ubiquitous:  The system shall <requirement>.
@@ -21,7 +30,7 @@ Patterns: each criterion collapses to one checkable claim:
 - [ ] <criterion 2> | VOI: <level> | Evidence: <tool, boundary, pass/fail>
 - [ ] <criterion 3> | VOI: <level> | Evidence: <tool, boundary, pass/fail>
 
-### EARS quality check (quick self-check before planning)
+#### EARS quality check (quick self-check before planning)
 - Each criterion has exactly one verifiable behavior.
 - At least one criterion uses an explicit trigger (`When ... shall ...`) when behavior is event-driven.
 - Edge/error behavior is captured with `If ... then ... shall ...` when relevant.
@@ -29,6 +38,15 @@ Patterns: each criterion collapses to one checkable claim:
 - **Every criterion has an evidence method** specifying tool, boundary layer, and pass/fail definition.
 - **Evidence targets the user-facing or API boundary**, not internal implementation details.
 - A test can be named for each criterion without adding extra interpretation.
+
+## Criteria archive
+
+Move a criterion here only after fresh inspect accepts it. Remove its active record and raw inline evidence after sealing the hashes.
+
+| ID | Correction | Criterion | Artifact refs | Artifact hash | Evidence method | Evidence hash | Completed |
+|----|------------|-----------|---------------|---------------|-----------------|---------------|-----------|
+
+Hash artifact bytes with SHA-256. For multiple artifacts, hash a sorted manifest of repository-relative path plus each file's SHA-256. Hash the exact compact raw proof bytes before removing them. Prefix both hashes with `sha256:`.
 
 ## Out of scope
 <Explicitly list what NOT to touch. Prevents scope drift.>
@@ -52,5 +70,6 @@ re-injects these mid-implementation, so be concrete.>
 ---
 **Principles**: preserve raw user words, derive actions separately, assess with evidence.
 This file lives at `VIRTUCON_HQ/<org>/_<repo>/blueprints/<date>-<short-name>.blueprint.md` and
-evolves through blueprint -> replicate -> inspect -> extract. Checkmarks track progress;
+is the durable state bus for orchestrator-owned phase transitions. Phase workers return to the
+orchestrator and never invoke a successor. Checkmarks track active correction progress;
 VOI levels track how each unknown was resolved.

@@ -207,13 +207,13 @@ function buildNudge(orgRepo) {
     '',
     'Usage guidance:',
     '- For non-trivial tasks, invoke skill("blueprint") before starting implementation.',
-    '- After implementation, invoke skill("inspect") to get an evidence-based review.',
-    '- After merge or session end, invoke skill("extract") to capture lessons.',
-    '- For the full autopilot flow, use the minime:dr-evil agent.',
+    '- Direct phase invocation returns to its caller and never invokes another phase.',
+    '- For the full autopilot flow, use minime:dr-evil, the sole automatic phase-transition owner.',
+    '- Dr. Evil keeps extract pending through corrections and dispatches it once at the coherent task or session boundary.',
     '- blueprint accepts inline context. No separate task file is required.',
     '',
-    'Skill chaining: blueprint -> replicate -> inspect -> extract.',
-    'Each skill will tell you which skill to invoke next.',
+    'Automatic sequencing is orchestrator-owned: blueprint -> replicate -> inspect -> extract.',
+    'Every phase returns status, blueprint_path, changed_files[], blocking_issue, and evidence_excerpts[].',
     '</minime-workflow-nudge>',
   ].join('\n');
 }
