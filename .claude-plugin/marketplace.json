@@ -9,7 +9,7 @@
     {
       "name": "minime",
       "source": "./",
-      "description": "Four-phase agent workflow (blueprint / replicate / inspect / extract) with a per-repo corrections wiki. One human review gate, tiered by risk. Includes a dr-evil agent for autopilot mode and a frau subagent that runs inspection with full tool access in a fresh context to remove implementation bias."
+      "description": "Four-phase agent workflow (blueprint / replicate / inspect / extract) with a per-repo corrections wiki and one risk-tiered human review gate. Dr. Evil runs the flow; Frau inspects in a fresh context with full tool access."
     }
   ]
 }

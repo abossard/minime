@@ -18,14 +18,15 @@
 
 ## What is minime?
 
-minime is a GitHub Copilot CLI plugin that carries a coding task through planning, implementation, independent inspection, and knowledge capture. It addresses requirements drift in long agent sessions, reviews built on confident summaries instead of executed proof, and useful lessons that disappear when a session ends.
+minime is a GitHub Copilot CLI plugin that carries a coding task through planning, implementation, independent inspection, and knowledge capture. It addresses requirements drift in long agent sessions, reviews built on summaries instead of executed proof, and useful lessons that disappear when a session ends.
 
-You start with a task description. The `minime:dr-evil` agent coordinates the four phases, brings you evidence, and asks you to judge unresolved choices.
+You start with a task description. The `minime:dr-evil` agent manages the work and coordinates four phases: blueprint, replicate, inspect, and extract. It brings you evidence and asks you to judge choices it cannot resolve from data.
 
 ## Features
 
-- **A living blueprint:** minime turns your request into verifiable criteria, records decisions, and keeps the plan on disk across fresh agent contexts.
-- **Execution-grounded implementation:** the replicate phase selects tests for the touched surface, runs them, observes the output, and fixes failures.
+- **A living blueprint:** minime turns your request into verifiable criteria, records decisions, and keeps the plan on disk across fresh contexts.
+- **Visible work management:** Dr. Evil discovers available skills and plugins, aligns the blueprint with native plans, todos, and subagent work, and can keep an external tracker synchronized with your permission.
+- **Execution-grounded implementation:** replicate selects tests for the touched surface, runs them, observes the output, and fixes failures.
 - **Fresh inspection:** the `minime:frau` inspector starts without the implementer's context, checks the current task against its criteria, and returns evidence for human judgment.
 - **Durable project knowledge:** minime retrieves relevant cited wiki entries during planning and captures reusable lessons with links back to live code.
 - **Automatic local setup:** a session hook creates the knowledge and blueprint directories under `VIRTUCON_HQ`. The default location is `$HOME/.minime`.

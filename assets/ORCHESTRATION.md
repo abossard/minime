@@ -1,16 +1,16 @@
 # Orchestration
 
 minime runs four phases in order: blueprint -> replicate -> inspect -> extract.
-No extra human review gate belongs between those phases.
+The flow has no mandatory approval gate between phases.
 
 ## Shared knowledge contract
 
-This file is the canonical contract for repo and org knowledge roots under `VIRTUCON_HQ`.
-Mirror only phase-local wording in skills and README.
+This file is also the canonical contract for repo and org knowledge under `VIRTUCON_HQ`.
+Skills and README keep only phase-local wording.
 
 ### Layout
 
-`VIRTUCON_HQ` now has one shared knowledge root plus per-repo blueprint folders:
+`VIRTUCON_HQ` has a shared knowledge root plus per-repo blueprint folders:
 
 ```text
 VIRTUCON_HQ/
@@ -27,7 +27,7 @@ VIRTUCON_HQ/
   <org>/_<repo>/blueprints/
 ```
 
-The shared root keeps the same three-layer contract:
+The shared root keeps a three-layer contract:
 
 - `raw/`
   - Immutable source documents stored under `raw/<org>/<repo>/`.
@@ -61,20 +61,30 @@ Evidence weight tiers:
 - 2. some value (direct code references)
 - 3. zero value (AI statements without execution or code reference)
 
-## VOI taxonomy
+## Value of Information -> VOI
 
-For each open unknown, classify and resolve by level:
+For each unclear thing, assumption or unknown, check if it falls into one of these categories:
 - **decided-by-data**: resolvable from code, docs, tests, or specs. Resolve directly with evidence.
 - **needs-research**: resolvable but needs evidence gathering first. Dispatch subagents with strict return contracts: raw proof first, interpretation second.
 - **undecidable-now**: true value tradeoff or policy decision. Use `ask_user` per the ask_user contract below.
 
 ## Phase isolation
 
-Each phase (except inspect) runs in a fresh `general-purpose` subagent via the `task` tool. This prevents tool-output accumulation in the orchestrator's context. The blueprint on disk is the sole cross-phase state bus; no phase depends on chat context from a previous phase.
+- Each phase runs in a fresh subagent dispatched through the `task` tool. 
+- Blueprint, replicate, and extract use `general-purpose` or existing specialized agents for the project
+- inspect uses `minime:frau`. Explicit task dispatch is the enforcement point because skill frontmatter fork metadata is not honored by every harness. This prevents tool-output accumulation in the orchestrator's context. The blueprint on disk is the sole cross-phase state bus; no phase depends on chat context from a previous phase.
 
 ## Phase transition ownership
 
-Dr. Evil is the sole automatic phase-transition owner. A phase worker completes its bounded work, persists its evidence, and returns control to the orchestrator without invoking another phase. Dr. Evil validates the result and alone decides whether to repeat, stop, ask for input, or dispatch the next phase. A manually invoked phase returns to its caller and never self-chains.
+Run the phases with these handoffs:
+
+1. Dispatch blueprint. Continue only with a completed plan and persisted blueprint path.
+2. Dispatch replicate. Continue only with the current-task delta, execution proof, and updated blueprint.
+3. Dispatch inspect through a fresh `minime:frau` task. Continue only with its evidence package and risk tier. Route HIGH findings through `ask_user`; archive accepted criteria, open correction criteria, and return to replicate when needed.
+   An inspect result produced inline in the orchestrator's implementing context is incomplete. Repeat inspect through the required fresh `minime:frau` task dispatch.
+4. Dispatch extract only at the terminal boundary below.
+
+After three attempts on one criterion without new execution evidence, route the blocker through `ask_user`.
 
 Every phase returns exactly this shared result contract:
 
@@ -92,7 +102,7 @@ Standard and fast-path work use strong high reasoning. A fast path may narrow va
 
 ## Documentation validation fast path
 
-Dr. Evil classifies the current-task delta before validation. Fast-path eligibility requires all of the following:
+The orchestrator classifies the current-task delta before validation. Fast-path eligibility requires all of the following:
 
 - The delta is exclusively non-operational prose documentation.
 - The line metric is `added + removed < 50`; exactly 50 lines is ineligible.
@@ -117,7 +127,7 @@ Policy matrix:
 
 Each correction has one small `## Active criteria` section with a correction ID, its verbatim correction source, and only new, failed, or invalidated criteria for that correction. Completed criteria from earlier corrections do not return to active state unless their archived baseline proof is invalidated.
 
-After fresh inspect accepts an active criterion, Dr. Evil removes its inline active record and appends one compact archive record containing:
+After fresh inspect accepts an active criterion, the orchestrator removes its inline active record and appends one compact archive record containing:
 
 - stable criterion ID and exact criterion text
 - correction ID
@@ -131,11 +141,11 @@ A missing or changed referenced artifact, or a changed proof definition, invalid
 
 ## Inspection scope
 
-The orchestrator supplies inspect with the current-task delta, current active criteria, and invalidated archived baseline proofs. Inspect must not gather the full branch, repository, or every archived criterion. The fresh `minime:frau` fork remains mandatory.
+The orchestrator supplies inspect with the current-task delta, current active criteria, and invalidated archived baseline proofs. Inspect must not gather the full branch, repository, or every archived criterion. The fresh `minime:frau` task dispatch remains mandatory.
 
 ## Terminal extract boundary
 
-Extract stays pending throughout correction loops. Dr. Evil dispatches extract at most once, only when the requested task completes or the session explicitly ends, there are no active criteria, and there is no blocking issue. Inspect and other phase workers return without invoking extract.
+Extract stays pending throughout correction loops. The orchestrator dispatches extract at most once, only when the requested task completes or the session explicitly ends, there are no active criteria, and there is no blocking issue. Inspect and other phase workers return without invoking extract.
 
 ## Git mutation boundary
 
@@ -153,7 +163,7 @@ Surface live phase progress through the harness native todo or task tool, not a 
 
 ## Ask_user rule
 
-Use `ask_user` only for true `undecidable-now` tradeoffs or when the task source is missing.
+Use `ask_user` only for `undecidable-now` tradeoffs or when the task source is missing.
 Do not add plan approval checkpoints.
 
 Every `ask_user` call must include:
@@ -176,26 +186,25 @@ After the response, resume the flow. Do not idle.
 |-------|---------------------|---------------------|-------|
 | Evidence-first / No-verdict | inspect/SKILL.md | (none needed, frau reads inspect) | |
 | Evidence weight tiers | ORCHESTRATION.md | replicate, inspect (reference only) | |
-| VOI triage (3-level) | ORCHESTRATION.md | blueprint (full), dr-evil (reference) | |
-| ask_user contract | ORCHESTRATION.md | dr-evil (reference), blueprint, inspect | |
+| VOI triage (3-level) | ORCHESTRATION.md | blueprint (full), orchestrator agent (reference) | |
+| ask_user contract | ORCHESTRATION.md | orchestrator agent (reference), blueprint, inspect | |
 | Knowledge layout | ORCHESTRATION.md | blueprint (reads), extract (reads+writes), lab (bash) | |
-| Risk tiers (HIGH/LOW) | inspect/SKILL.md | dr-evil (routes), README (summary) | |
+| Risk tiers (HIGH/LOW) | inspect/SKILL.md | orchestrator agent (routes), README (summary) | |
 | Inspect review gate wording | inspect/SKILL.md | (none needed) | Routes HIGH-risk items to `ask_user`. |
-| Phase isolation | ORCHESTRATION.md | dr-evil (reference) | |
-| Phase transition ownership | ORCHESTRATION.md | dr-evil, all phase skills, hook, README | Dr. Evil alone dispatches successors. |
-| Phase result contract | ORCHESTRATION.md | dr-evil, all phase skills | Required fields and empty behavior. |
-| Documentation validation fast path | ORCHESTRATION.md | dr-evil, README | Scope and time narrow; reasoning does not. |
-| Living blueprint lifecycle | ORCHESTRATION.md | blueprint template, blueprint, dr-evil, inspect | Active correction and hashed archive. |
-| Inspection scope | ORCHESTRATION.md | dr-evil, inspect | Current-task delta and invalidated proofs only. |
-| Terminal extract boundary | ORCHESTRATION.md | dr-evil, extract, hook, README | One deferred terminal harvest. |
-| Git mutation boundary | ORCHESTRATION.md | dr-evil, all phase skills, README | Exact current-task permission only. |
-| Reasoning invariant | ORCHESTRATION.md | dr-evil, inspect, README | High reasoning in every route. |
-| Progress tracking | ORCHESTRATION.md | dr-evil (seeds list), all skills (mark phase) | Harness native todo tool, visibility only |
+| Phase isolation | ORCHESTRATION.md | orchestrator agent (reference) | Inspect dispatches through `task` to `minime:frau`. |
+| Phase transition ownership | ORCHESTRATION.md | orchestrator agent, all phase skills, hook, README (reference only) | One orchestrator dispatches successors. |
+| Phase result contract | ORCHESTRATION.md | orchestrator agent, all phase skills | Required fields and empty behavior. |
+| Documentation validation fast path | ORCHESTRATION.md | orchestrator agent, README | Scope and time narrow; reasoning does not. |
+| Living blueprint lifecycle | ORCHESTRATION.md | blueprint template, blueprint, orchestrator agent, inspect | Active correction and hashed archive. |
+| Inspection scope | ORCHESTRATION.md | orchestrator agent, inspect | Current-task delta and invalidated proofs only. |
+| Terminal extract boundary | ORCHESTRATION.md | orchestrator agent, extract, hook, README | One deferred terminal harvest. |
+| Git mutation boundary | ORCHESTRATION.md | orchestrator agent, all phase skills, README | Exact current-task permission only. |
+| Reasoning invariant | ORCHESTRATION.md | orchestrator agent, inspect, README | High reasoning in every route. |
+| Progress tracking | ORCHESTRATION.md | orchestrator agent (seeds list), all skills (mark phase) | Harness native todo tool, visibility only |
 | EARS criteria | blueprint/SKILL.md | replicate (tests), inspect (verifies) | |
 | Scoped wiki entries | ORCHESTRATION.md | all skills (phase-specific) | |
 | Constraint re-injection | replicate/SKILL.md | (none needed) | |
 | Test-at-boundary | replicate/SKILL.md | inspect (verifies) | |
-| No human gate | ORCHESTRATION.md | skill frontmatter only | |
 | Preserve raw wording | ORCHESTRATION.md | blueprint, inspect | |
 | Human corrections signal | extract/SKILL.md | inspect (flags for extract) | |
 

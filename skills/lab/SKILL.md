@@ -8,7 +8,9 @@ allowed-tools: Bash(git remote get-url *) Bash(cp *) Bash(mkdir *) Bash(ls *) Ba
 
 # Skill: lab
 
-Bootstrap minime in plugin-only mode. The session-start hook already auto-bootstraps this state, so use this skill mainly to force or verify bootstrap.
+Bootstrap minime state in the user home. Writes nothing to the working repository. Idempotent.
+
+Trigger: first-time setup, or a forced re-run to verify the state. The session-start hook already bootstraps this state on every session, so run this skill only to force or verify it.
 
 ## What gets created in user home
 
@@ -24,7 +26,7 @@ VIRTUCON_HQ/schema.md
 VIRTUCON_HQ/<org>/_<repo>/blueprints/
 ```
 
-If a legacy `wiki.md` already exists at the repo root, bootstrap copies it to `raw/<org>/<repo>/legacy-wiki.md` once.
+If a legacy `wiki.md` already exists at the repo root, bootstrap copies it once to `raw/<org>/<repo>/legacy-wiki.md`.
 
 ## Bootstrap
 
