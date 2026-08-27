@@ -12,7 +12,7 @@ Turn the task into a persisted executable plan. Runs first in the four-phase flo
 Trigger: the user has a task to plan, or the orchestrator started a run.
 
 ## Agent
-The blueprint can be done by an agent that has reasoning and capabilities to start research and other agents. Strong models with reasoning preferred, e.g. Opus 5 or GPT 5.6 Sol.
+Run blueprint with a reasoning-capable agent that can dispatch research and other agents. Prefer strong reasoning models, such as Opus 5 or GPT 5.6 Sol.
 
 ## Progress
 
@@ -23,7 +23,7 @@ Mark this phase `in_progress` on entry and `done` at handoff in the harness nati
 1. **Persist the living blueprint first.**
    Derive `<org>` and `<repo>` from `git remote get-url origin`. Take VIRTUCON_HQ from the session nudge, then the env var, then `~/.minime`.
    Create or update `VIRTUCON_HQ/<org>/_<repo>/blueprints/<YYYY-MM-DD>-<short-name>.blueprint.md` from `VIRTUCON_HQ/templates/blueprint.template.md`.
-   When an older HQ template lacks the correction-scoped `## Active criteria` or `## Criteria archive` sections, normalize the living blueprint and leave the user's template file untouched. Move only uncompleted criteria into the current correction. Never copy completed criteria back into active state and never fabricate archive hashes; leave unsealed legacy completion text for later independent inspection.
+   When an older HQ template lacks the correction-scoped `## Active criteria` or `## Criteria archive` sections, or orders sections differently from the readability contract below, normalize the living blueprint and leave the user's template file untouched. Move only uncompleted criteria into the current correction. Never copy completed criteria back into active state and never fabricate archive hashes; leave unsealed legacy completion text for later independent inspection.
    Read the file back from disk before continuing.
 
 2. **Accept the task source from wherever it lives.**
@@ -42,8 +42,10 @@ Mark this phase `in_progress` on entry and `done` at handoff in the harness nati
    When the repo topic directory is empty, continue with zero repo wiki context and note that in the blueprint instead of blocking.
    Treat legacy `VIRTUCON_HQ/<org>/_<repo>/wiki/` and `wiki.md` files as compatibility input only. Prefer the global wiki tree whenever both exist.
 
-4. **Discover domain-specific skills and agents.**
+4. **Discover domain-specific and writing skills.**
    Scan local and installed skills or agents that fit the task.
+   Scan the same inventory for skills that make a document easier for people and agents to read, such as `writing-for-agents` for structure and `stop-slop` for prose review.
+   Record the matches under `## Discovered skills and agents`.
 
 5. **Run VOI triage.**
    Resolve `decided-by-data` unknowns directly.
@@ -62,17 +64,42 @@ Mark this phase `in_progress` on entry and `done` at handoff in the harness nati
    When a cited claim no longer matches live code, ignore it for planning and flag it for extract as stale.
    Tag every entry carried into `## Relevant verified wiki entries` with an inline `active`, `stale`, or `superseded` status against live code.
 
-8. **Plan silently and persist the handoff.**
+8. **Call `writing-for-agents` before drafting.**
+   Call the skill tool for `writing-for-agents` when step 4 found it, then apply its guidance while writing every section.
+   When step 4 found no writing skill, apply the readability contract below and record the absence in step 10.
+
+9. **Plan silently and persist the handoff.**
    Write `## Plan summary` with files to touch, implementation order, fix shape, tests, and resolved wiki constraints.
+   Write every section named in the readability contract below.
 
-9. **Critique the test strategy.**
-   Rubber-duck each criterion until it is backed by a user-facing proof and at least one meaningful edge case.
+10. **Review the prose and clean the document.**
+    Call the skill tool for a prose-review skill such as `stop-slop` when step 4 found one, then apply its edits. Its metrics are editing input, not an acceptance score.
+    List the exact skill names you called under `## Discovered skills and agents`. List `none available; readability contract applied` when you called none.
+    Delete every HTML authoring comment, every `<angle-bracket>` placeholder, and the template's EARS pattern and quality-check scaffolding from the living blueprint.
 
-10. **Self-challenge briefly.**
+11. **Critique the test strategy.**
+    Rubber-duck each criterion until it is backed by a user-facing proof and at least one meaningful edge case.
+
+12. **Self-challenge briefly.**
     State the riskiest assumption, when the approach would be wrong, and any remaining ambiguity.
 
-11. **Return.**
+13. **Return.**
     Return control to the orchestrator, or to the caller for direct manual use. Do not invoke another phase.
+
+## Readability contract
+
+The persisted blueprint is the only cross-phase state bus. Write it so a person or a fresh agent can act on it without rereading the conversation.
+
+Emit exactly these level-2 sections, once each, in this order:
+
+`## Goal`, `## Active criteria`, `## Criteria archive`, `## Plan summary`, `## Constraints / non-negotiables`, `## Out of scope`, `## User's original request`, `## Decisions made`, `## Relevant verified wiki entries`, `## Research resolved`, `## Discovered skills and agents`, `## Evidence collected`, `## Test strategy critique`, `## Self-challenge`, `## Handoff`, `## Discovered during review`, `## User feedback`.
+
+- Write `None.` under a section that has no content yet, and keep the heading.
+- Keep the `## Goal` and `## Active criteria` headings byte-exact. The Minime canvas parses them.
+- State one meaning in one section. Keep a decision beside its source.
+- Give every decision and every wiki entry a direct source. Label an unsupported claim a lead.
+- Write short factual sentences in active voice. Join clauses with a full stop, comma, colon, or parentheses, so the finished document holds zero em dash characters.
+- Name a writing skill only after the skill tool has returned it.
 
 ## Result contract
 

@@ -1,75 +1,131 @@
 # Blueprint: <short-name>
 
-Created: <date>  |  Status: planning  |  Repo: <org/repo>
+Created: <YYYY-MM-DD HH:MM ±TZ>  |  Status: planning  |  Repo: <org>/<repo>
 
-## User's original request (verbatim; do not edit or interpret)
-> <paste the user's exact words here, unmodified>
+<!-- Authoring guide. Fill every section in the order below, then delete every HTML comment and
+     every <angle-bracket> placeholder before handoff.
+     The Minime canvas parser (`.github/extensions/minime-flow/lib/blueprints.mjs`) reads
+     `## Goal` and `## Active criteria` byte-exact. Keep those two headings unchanged. -->
 
 ## Goal
-<2–4 sentences. What outcome, and why. Not how.>
+
+<2-4 sentences. The outcome and why it matters. Not how.>
 
 ## Active criteria
 
 ### Correction <C0>: <short correction name>
 
-#### Correction source (verbatim; do not edit or interpret)
-> <paste the exact task or correction words here, unmodified>
+#### Correction source
 
-Only this correction's new, failed, or invalidated criteria belong here. Do not copy completed criteria from earlier corrections back into this section.
+> <the exact task or correction words, unmodified>
 
-#### EARS criteria (each must be independently testable)
+<!-- Only this correction's new, failed, or invalidated criteria belong here.
+     Completed criteria from earlier corrections stay in the archive. -->
 
-Patterns: each criterion collapses to one checkable claim:
-- Ubiquitous:  The system shall <requirement>.
-- Event:       When <trigger>, the system shall <response>.
-- State:       While <state>, the system shall <response>.
-- Conditional: If <condition>, then the system shall <response>.
-- Optional:    Where <feature included>, the system shall <response>.
+<!-- EARS patterns. Each criterion collapses to one checkable claim:
+       Ubiquitous:  The system shall <requirement>.
+       Event:       When <trigger>, the system shall <response>.
+       State:       While <state>, the system shall <response>.
+       Conditional: If <condition>, then the system shall <response>.
+       Optional:    Where <feature included>, the system shall <response>.
+     Quality check before planning:
+       - one verifiable behavior per criterion
+       - an explicit `When ... shall ...` trigger for event-driven behavior
+       - `If ... then ... shall ...` for edge and error behavior
+       - outcomes rather than code structure
+       - an evidence method naming tool, boundary, and pass/fail signal
+       - evidence at the user-facing or API boundary
+       - one nameable test per criterion -->
 
-- [ ] <criterion 1> | VOI: <level> | Evidence: <tool, boundary, pass/fail>
-- [ ] <criterion 2> | VOI: <level> | Evidence: <tool, boundary, pass/fail>
-- [ ] <criterion 3> | VOI: <level> | Evidence: <tool, boundary, pass/fail>
-
-#### EARS quality check (quick self-check before planning)
-- Each criterion has exactly one verifiable behavior.
-- At least one criterion uses an explicit trigger (`When ... shall ...`) when behavior is event-driven.
-- Edge/error behavior is captured with `If ... then ... shall ...` when relevant.
-- Wording avoids implementation details (state outcomes, not code structure).
-- **Every criterion has an evidence method** specifying tool, boundary layer, and pass/fail definition.
-- **Evidence targets the user-facing or API boundary**, not internal implementation details.
-- A test can be named for each criterion without adding extra interpretation.
+- [ ] `<C0-1>` <criterion> | VOI: <decided-by-data|needs-research|undecidable-now> | Evidence: <tool, boundary, pass/fail>
+- [ ] `<C0-2>` <criterion> | VOI: <decided-by-data|needs-research|undecidable-now> | Evidence: <tool, boundary, pass/fail>
 
 ## Criteria archive
 
-Move a criterion here only after fresh inspect accepts it. Remove its active record and raw inline evidence after sealing the hashes.
+<!-- Append a record only after fresh inspect accepts a criterion, then remove its active record
+     and its inline raw evidence. Hash artifact bytes with SHA-256. For multiple artifacts, hash a
+     sorted manifest of repository-relative path plus each file's SHA-256. Hash the exact compact
+     raw proof bytes before removing them. Prefix both hashes with `sha256:`.
+     Write one line stating the absence while the table is empty. -->
 
 | ID | Correction | Criterion | Artifact refs | Artifact hash | Evidence method | Evidence hash | Completed |
 |----|------------|-----------|---------------|---------------|-----------------|---------------|-----------|
 
-Hash artifact bytes with SHA-256. For multiple artifacts, hash a sorted manifest of repository-relative path plus each file's SHA-256. Hash the exact compact raw proof bytes before removing them. Prefix both hashes with `sha256:`.
+## Plan summary
 
-## Out of scope
-<Explicitly list what NOT to touch. Prevents scope drift.>
+<!-- Files to touch, implementation order, fix shape per area, what proves each criterion,
+     and the wiki constraints that shaped the plan. -->
+
+| Order | File | Change |
+|------:|------|--------|
+| 1 | `<path>` | <change> |
 
 ## Constraints / non-negotiables
-<Perf budgets, libraries to use or avoid, patterns to follow. The agent
-re-injects these mid-implementation, so be concrete.>
+
+<!-- Concrete rules replicate re-injects mid-implementation: budgets, libraries, patterns to follow. -->
+
+- <constraint>
+
+## Out of scope
+
+- <explicit non-goal>
+
+## User's original request
+
+<!-- The user's exact words. Append later corrections; edit nothing. -->
+
+> <the user's exact request>
 
 ## Decisions made
+
 | Unknown | VOI level | Resolution | Source |
 |---------|-----------|------------|--------|
-| | | | |
+| <unknown> | <level> | <resolution> | <file:line or command output> |
+
+## Relevant verified wiki entries
+
+<!-- Only entries selected for this task. Tag each `active`, `stale`, or `superseded` against live code. -->
+
+- **<status>** `<wiki path>`: <claim>. Verified against `<file:line>`.
+
+## Research resolved
+
+- <needs-research item and the raw proof that closed it>
+
+## Discovered skills and agents
+
+<!-- Include the writing skills applied to this document, or state that none was available. -->
+
+- `<skill or agent>`: <why it matters here>
+- Writing skills applied: <skills, or `none available; readability contract applied`>
+
+## Evidence collected
+
+- <compact raw excerpt or command output>
+
+## Test strategy critique
+
+- <rubber-duck finding per criterion, including the meaningful edge case>
+
+## Self-challenge
+
+- Riskiest assumption: <text>
+- When this approach is wrong: <text>
+- Remaining ambiguity: <text>
+
+## Handoff
+
+Invoke `skill("replicate")` with this blueprint path.
 
 ## Discovered during review
-<!-- Criteria surfaced by review feedback that should have been in the original EARS.
+
+<!-- Criteria surfaced by review feedback that belonged in the original EARS.
      Each gets its own checkbox and VOI level. -->
 
-## User feedback (verbatim; append, never edit or reinterpret)
-<!-- Paste exact user feedback as received, with timestamps. This is raw signal. -->
+None.
 
----
-**Principles**: preserve raw user words, derive actions separately, assess with evidence.
-This file lives at `VIRTUCON_HQ/<org>/_<repo>/blueprints/<date>-<short-name>.blueprint.md` and
-is the durable state bus for orchestrator-owned phase transitions. Phase workers return to the
-orchestrator and never invoke a successor. Checkmarks track active correction progress;
-VOI levels track how each unknown was resolved.
+## User feedback
+
+<!-- Exact user feedback with timestamps. Append, never edit or reinterpret. -->
+
+None.
